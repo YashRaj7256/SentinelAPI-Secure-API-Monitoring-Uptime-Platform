@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+        PARENT: Spring Boot Starter Parent
+        This POM inherits from Spring Boot's parent, which provides:
+        - Default dependency versions (so we don't specify versions for most Spring libraries)
+        - Default plugin configuration (compiler settings, packaging, etc.)
+        - Sensible defaults for application properties
+    -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.1.0</version>
+        <relativePath/> <!-- lookup parent from Maven repository, not local filesystem -->
+    </parent>
+
+    <!--
+        PROJECT IDENTITY
+        groupId:    Reverse domain name — uniquely identifies the organization/project
+        artifactId: The project name — becomes the JAR file name
+        version:    Semantic versioning — SNAPSHOT means "in development"
+    -->
+    <groupId>com.sentinelapi</groupId>
+    <artifactId>sentinelapi</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <name>SentinelAPI</name>
+    <description>Secure API Monitoring and Uptime Platform</description>
+
+    <properties>
+        <!-- Java 21 LTS — the language version Maven will compile against -->
+        <java.version>21</java.version>
+    </properties>
+
+    <dependencies>
+
+        <!--
+            SPRING WEB
+            Provides: @RestController, @RequestMapping, embedded Tomcat, Jackson JSON
+            This is the foundation of any Spring Boot REST API.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--
+            SPRING DATA JPA
+            Provides: JPA (Java Persistence API) + Hibernate ORM
+            Lets us map Java classes to database tables using annotations like @Entity, @Column.
+            Spring Data auto-generates repository implementations from interfaces.
+            No version needed — managed by the parent POM.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!--
+            SPRING VALIDATION
+            Provides: @Valid, @NotBlank, @Min, @Max, @Size, @URL
+            Validates incoming request DTOs automatically before they reach controller methods.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!--
+            SPRING WEBFLUX (for WebClient only)
+            We use ONLY the WebClient HTTP client from this dependency.
+            WebClient is Spring's modern replacement for RestTemplate — it supports
+            async calls, configurable timeouts, and streaming.
+            We need it to make HTTP requests to monitored endpoints.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+
+        <!--
+            FLYWAY (Database Migrations)
+            In Spring Boot 4.x, use the starter instead of flyway-core directly.
+            Flyway manages schema changes as versioned SQL files (V1__initial_schema.sql, etc.).
+            On app startup, Flyway checks which migrations have run and applies new ones.
+            This ensures the database schema is version-controlled and reproducible.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-flyway</artifactId>
+        </dependency>
+
+        <!--
+            FLYWAY POSTGRESQL MODULE
+            Flyway 12+ modularized database support into separate JARs.
+            Without this, Flyway doesn't recognize PostgreSQL and throws
+            "Unsupported Database" even though the JDBC driver is present.
+            Version is managed by Spring Boot's parent POM.
+        -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
+
+        <!--
+            POSTGRESQL JDBC DRIVER
+            The low-level driver that lets Java communicate with PostgreSQL.
+            Spring Data JPA / Hibernate use this under the hood to execute SQL.
+            'runtime' scope: needed when the app runs, but not at compile time.
+        -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!--
+            LOMBOK (Minimal usage)
+            Used SELECTIVELY for @Getter and @Setter only on entities/DTOs.
+            Constructors, service wiring, and dependency injection are written explicitly
+            for learning and readability. See Lombok Usage Policy in the implementation plan.
+        -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- ==================== TEST DEPENDENCIES ==================== -->
+
+        <!--
+            SPRING BOOT TEST
+            Includes: JUnit 5, Mockito, Spring Test, AssertJ, MockMvc
+            Everything needed for unit and integration testing.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!--
+            TESTCONTAINERS (PostgreSQL)
+            Runs a real PostgreSQL instance in a Docker container during tests.
+            Ensures tests use the same database engine as production.
+            Will be used starting from Day 15 integration tests.
+        -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>1.21.4</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--
+            TESTCONTAINERS (JUnit 5 Integration)
+            Provides @Testcontainers and @Container annotations for
+            lifecycle management of test containers within JUnit 5.
+        -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>1.21.4</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <!-- Testcontainers versions are specified directly on each dependency above.
+         If we add more Testcontainers modules later, consider using a BOM. -->
+
+    <build>
+        <plugins>
+            <!--
+                SPRING BOOT MAVEN PLUGIN
+                Adds the 'spring-boot:run' goal — lets us run the app with: mvn spring-boot:run
+                Also packages the app as an executable JAR with all dependencies included.
+            -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!-- Tell the compiler to ignore Lombok (it's a compile-time annotation processor) -->
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

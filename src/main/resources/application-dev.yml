@@ -1,0 +1,29 @@
+# =============================================================================
+# SentinelAPI — Development Profile Configuration
+# =============================================================================
+# This file is loaded ONLY when spring.profiles.active=dev
+# It overrides values from application.yml for local development.
+#
+# SECURITY NOTE: This file contains local database credentials.
+# In production, credentials should come from environment variables or
+# a secret manager (e.g., AWS Secrets Manager, HashiCorp Vault) — never
+# from committed configuration files.
+#
+# For now, this is acceptable because:
+# 1. These are LOCAL development credentials only
+# 2. The database is on localhost, not publicly accessible
+# 3. We will add proper secret management in Phase 5+
+# =============================================================================
+
+spring:
+  datasource:
+    # JDBC URL format: jdbc:postgresql://host:port/database_name
+    url: jdbc:postgresql://localhost:5432/sentinelapi
+    username: postgres
+    password: Welcome@Again2
+    # HikariCP is Spring Boot's default connection pool.
+    # It manages a pool of reusable database connections for performance.
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 20000

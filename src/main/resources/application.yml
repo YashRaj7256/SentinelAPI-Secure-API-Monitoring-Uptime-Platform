@@ -1,0 +1,66 @@
+# =============================================================================
+# SentinelAPI — Main Application Configuration
+# =============================================================================
+# This file contains configuration that applies to ALL environments.
+# Environment-specific overrides go in application-{profile}.yml files.
+#
+# Spring Boot reads this file automatically on startup.
+# Properties here configure: server, database, Flyway, JPA, logging, etc.
+# =============================================================================
+
+spring:
+  application:
+    name: SentinelAPI
+
+  # ---- Profiles ----
+  # Active profile determines which application-{profile}.yml is loaded.
+  # 'dev' profile loads application-dev.yml with local PostgreSQL settings.
+  # In production, you'd activate 'prod' instead (via env var or CLI arg).
+  profiles:
+    active: dev
+
+  # ---- JPA / Hibernate ----
+  jpa:
+    # 'validate' mode: Hibernate checks that entities match the DB schema
+    # but does NOT modify the schema. Flyway owns schema changes, not Hibernate.
+    # Other modes:
+    #   'update'  — Hibernate modifies the schema (DANGEROUS in production)
+    #   'create'  — Drops and recreates tables on every startup
+    #   'none'    — Hibernate does nothing
+    hibernate:
+      ddl-auto: validate
+
+    # Disable Open-in-View: prevents Hibernate session from staying open
+    # during HTTP response rendering. Without this, lazy-loaded queries can
+    # fire unexpectedly during JSON serialization — causing performance issues.
+    # We want all database access to happen explicitly in the service layer.
+    open-in-view: false
+
+    # Show SQL queries in the console (useful for debugging in development)
+    show-sql: true
+
+    properties:
+      hibernate:
+        # Format SQL output for readability
+        format_sql: true
+
+  # ---- Flyway ----
+  flyway:
+    # Enable Flyway database migrations
+    enabled: true
+    # Where Flyway looks for migration SQL files
+    locations: classpath:db/migration
+
+# ---- Server ----
+server:
+  port: 8080
+
+# ---- Logging ----
+logging:
+  level:
+    # Our application's log level
+    com.sentinelapi: DEBUG
+    # Show SQL parameter values (helpful during development)
+    org.hibernate.SQL: DEBUG
+    # Show Flyway migration activity
+    org.flywaydb: INFO

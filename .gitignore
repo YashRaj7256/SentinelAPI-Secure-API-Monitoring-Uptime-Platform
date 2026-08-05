@@ -1,0 +1,58 @@
+# =============================================================================
+# SentinelAPI .gitignore
+# =============================================================================
+# This file tells Git which files/directories to IGNORE (never track/commit).
+# Purpose: Keep the repository clean of build artifacts, IDE files,
+# OS-generated files, and secrets.
+# =============================================================================
+
+# ---- Maven ----
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# ---- IDE (IntelliJ IDEA) ----
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# ---- IDE (VS Code) ----
+.vscode/
+# Exception: keep recommended extensions and settings if we add them later
+# !.vscode/extensions.json
+# !.vscode/settings.json
+
+# ---- IDE (Eclipse) ----
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+# ---- OS Generated ----
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ---- Logs ----
+*.log
+logs/
+
+# ---- Environment / Secrets ----
+# NEVER commit files containing passwords, API keys, or tokens
+.env
+*.env
+.env.local
+.env.*.local
+
+# ---- Package files ----
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
